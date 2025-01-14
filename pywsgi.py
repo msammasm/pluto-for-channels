@@ -11,20 +11,20 @@ monkey.patch_all()
 
 port = os.environ.get("PLUTO_PORT")
 if port is None:
-    port = 7777
+    port = 8000
 else:
     try:
         port = int(port)
     except:
-        port = 7777
+        port = 8000
 
 pluto_country_list = os.environ.get("PLUTO_CODE")
 if pluto_country_list:
    pluto_country_list = pluto_country_list.split(',')
 else:
-   pluto_country_list = ['local', 'us_east', 'us_west', 'ca', 'uk', 'fr']
+   pluto_country_list = ['local', 'us_east', 'us_west', 'ca', 'uk']
 
-ALLOWED_COUNTRY_CODES = ['local', 'us_east', 'us_west', 'ca', 'uk', 'fr', 'all']
+ALLOWED_COUNTRY_CODES = ['local', 'us_east', 'us_west', 'ca', 'uk', 'all']
 # instance of flask application
 app = Flask(__name__)
 provider = "pluto"
