@@ -142,6 +142,30 @@ def playlist(provider, country_code):
         return err, 500
     stations = sorted(stations, key = lambda i: i.get('number', 0))
 
+    client_id = providers[provider].load_device()
+    sid = uuid.uuid4()
+    stitcher = "https://cfd-v4-service-channel-stitcher-use1-1.prd.pluto.tv"
+    base_path = f"/stitch/hls/channel/{id}/master.m3u8"
+    jwt_required_list = ['625f054c5dfea70007244612', '625f04253e5f6c000708f3b7', '5421f71da6af422839419cb3']
+    params = {'advertisingId': '',
+              'appName': 'web',
+              'appVersion': 'unknown',
+              'appStoreUrl': '',
+              'architecture': '',
+              'buildVersion': '',
+              'clientTime': '0',
+              'deviceDNT': '0',
+              'deviceId': client_id,
+              'deviceMake': 'Chrome',
+              'deviceModel': 'web',
+              'deviceType': 'web',
+              'deviceVersion': 'unknown',
+              'includeExtendedEvents': 'false',
+              'sid': sid,
+              'userId': '',
+              'serverSideAds': 'false'
+    }
+    
     m3u = "#EXTM3U\r\n\r\n"
     for s in stations:
         url = f"http://{host}/{provider}/{country_code}/watch/{s.get('watchId') or s.get('id')}\n\n"
@@ -161,7 +185,8 @@ def playlist(provider, country_code):
         m3u += f" tvc-guide-description=\"{remove_non_printable(''.join(map(str, s.get('summary', []))))}\"" if s.get('summary') else ""
         m3u += f" tvg-shift=\"{''.join(map(str, s.get('timeShift', [])))}\"" if s.get('timeShift') else ""
         m3u += f",{s.get('name') or s.get('call_sign')}\n"
-        m3u += f"{url}\n\n"
+        m3u += f"{stitcher}/stitch/hls/channel/{s.get('id')}/master.m3u8?advertisingId=&appName=web&appVersion=unknown&appStoreUrl=&architecture=&buildVersion=&clientTime=0&deviceDNT=0&deviceId={client_id}&deviceMake=Chrome&deviceModel=web&deviceType=web&deviceVersion=unknown&includeExtendedEvents=false&sid={sid}&userId=&serverSideAds=false\n\n"
+
 
     response = Response(m3u, content_type='audio/x-mpegurl')
     return (response)
